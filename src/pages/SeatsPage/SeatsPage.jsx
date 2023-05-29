@@ -58,16 +58,17 @@ export default function SeatsPage(props) {
                         cadeirasAdicionadas.push(lugar);
                     }
                 })
+                listaCadeirasEscolhidasID.forEach(lugar=>{
+                    if(lugar!=cadeira.id){
+                        cadeirasAdicionadasID.push(lugar);
+                    }
+                })
+                setCadeirasEscolhidas(cadeirasAdicionadas);
+                setCadeirasEscolhidasID(cadeirasAdicionadasID);
             }
 
-            listaCadeirasEscolhidasID.forEach(lugar=>{
-                if(lugar!=cadeira.id){
-                    listaCadeirasEscolhidasID.push(lugar);
-                }
-            })
             
-            setCadeirasEscolhidas(cadeirasAdicionadas);
-            setCadeirasEscolhidasID(cadeirasAdicionadasID);
+            
         }
     }
 
@@ -140,7 +141,7 @@ export default function SeatsPage(props) {
 
             <FooterContainer data-test = "footer" >
                 <div>
-                    <img src={objetoFilme.poterURL} alt="poster" />
+                    <img src={objetoFilme.posterURL} alt="poster" />
                 </div>
                 <div>
                     <p>{objetoFilme.title}</p>
