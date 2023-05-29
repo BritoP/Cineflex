@@ -28,21 +28,19 @@ export default function HomePage() {
             Selecione o filme
 
             <ListContainer>
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
 
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
+                {movies.map((movie)=> (
+                    
+                    <MovieContainer data-test="movie" key = {movie.id}>
+                        <Link to={`/sessoes/${movie.id}`}>
+                            <img src={movie.posterURL} alt="poster" />
+                        </Link>
+                    </MovieContainer>
+                
 
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
+                )
+                )}
 
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
             </ListContainer>
 
         </PageContainer>
