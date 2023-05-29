@@ -6,14 +6,14 @@ import { Link } from "react-router-dom"
 
 export default function HomePage() {
 
-    const [movies,setMovies] = useState([]);
+    const [filmes,setFilmes] = useState([]);
 
     useEffect(() => {
 
         const promise = axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies");
         
         promise.then((resposta) => {
-            setMovies(resposta.data);
+            setFilmes(resposta.data);
         })
 
         promise.catch((err)=>{
@@ -29,14 +29,17 @@ export default function HomePage() {
 
             <ListContainer>
 
-                {movies.map((movie)=> (
+                {filmes.map((movie)=> (
                     
                     <MovieContainer data-test="movie" key = {movie.id}>
+
                         <Link to={`/sessoes/${movie.id}`}>
+
                             <img src={movie.posterURL} alt="poster" />
+
                         </Link>
+
                     </MovieContainer>
-                
 
                 )
                 )}

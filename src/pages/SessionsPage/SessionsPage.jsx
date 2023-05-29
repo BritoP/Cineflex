@@ -1,42 +1,55 @@
 import styled from "styled-components"
+import axios from "axios"
+import {useState} from "react"
+import { useEffect } from "react"
+import {Link,useParams} from "react-router-dom"
+
 
 export default function SessionsPage() {
 
+    const [sessoes,setSessoes]=useState([]);
+    const [objeto,setObjeto]=useState({});
+    const parametroRota2 = useParams();
+
+    useEffect(()=>{
+
+        const urlID = `https://mock-api.driven.com.br/api/v8/cineflex/movies/${parametroRota2.idFIlme}/showtimes`;
+        const promise = axios.get(urlID);
+
+        promise.then((resposta)=>{
+            setObjeto(resposta.data);
+            setSessoes(resposta.data.days);
+        })
+        promise.catch((erro)=>{
+            console.log(erro.response.data);
+        })
+    },[]);
     return (
         <PageContainer>
             Selecione o horário
             <div>
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
-
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
-
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
+                {sessoes.map(sessao=>(
+                    <SessionContainer data-test="movie-day" key = {sessao.id}>
+                        {sessao.weekday} - {sessao.date}
+                        <ButtonsContainer>
+                            {sessao.showtimes.map((horario)=>(
+                                <Link data-test ="showtime" to={`/assentos/${horario.id}`} key = {horario.id}>
+                                    <button>{horario.name}</button>
+                                </Link>
+                            )
+                            )}
+                        </ButtonsContainer>
+                    </SessionContainer>
+                )
+                )}
             </div>
 
             <FooterContainer>
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <img src={objeto.posterURL} alt="poster" />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
+                    <p>{objeto.title}</p>
                 </div>
             </FooterContainer>
 

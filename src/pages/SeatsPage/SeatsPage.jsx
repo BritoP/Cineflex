@@ -1,17 +1,114 @@
 import styled from "styled-components"
+import {useState} from "react"
+import axios from "axios"
+import {useEffect} from "react"
+import { Link , useNavigate, useParams } from "react-router-dom"
 
-export default function SeatsPage() {
+
+export default function SeatsPage(props) {
+
+    const {objetoFilme,setObjetoFilme,objetoDia,setObjetoDia,objetoNome,setObjetoNome,nome,setNome,cpf,setCpf,cadeirasEscolhidas,setCadeirasEscolhidas,cadeirasEscolhidasID,setCadeirasEscolhidasID} = props;
+    const navigate = useNavigate();
+    const parametroRota = useParams();
+    const [cadeiras,setCadeiras] = useState([]);
+
+    useEffect(()=>{
+
+        const axiosRota = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${parametroRota.idSessao}/seats`;
+        const promise = axios.get(axiosRota);
+
+        promise.then((resposta)=>{
+            setCadeiras(resposta.data.seats);
+            setObjetoFilme(resposta.data.movie);
+            setObjetoNome(resposta.data.name);
+            setObjetoDia(resposta.data.day);
+        })
+        promise.catch((erro)=>{
+            console.log(erro.response.data);
+        })
+
+    },[]);
+
+    function escolherCadeira(cadeira){
+        
+        if(cadeira.isAvailable===false){
+            alert("Cadeira ocupada");
+        }else{
+            let nomeTemporario;
+            let controle = true;
+
+            cadeirasEscolhidas.forEach(lugar =>{
+                if(lugar === cadeira.id){
+                    controle = false;
+                    nomeTemporario = cadeira.name;
+                }
+            });
+
+            if(controle === true){
+                setCadeirasEscolhidas([...cadeirasEscolhidas,cadeira.id]);
+                setCadeirasEscolhidasID([...cadeirasEscolhidasID,cadeira.name]);
+            }else{
+                let cadeirasAdicionadas = [];
+                let listaCadeirasEscolhidas = [...cadeirasEscolhidas];
+                let cadeirasAdicionadasID = [];
+                let listaCadeirasEscolhidasID = [...cadeirasEscolhidasID];
+                
+                listaCadeirasEscolhidas.forEach(lugar=>{
+                    if(lugar!=cadeira.id){
+                        cadeirasAdicionadas.push(lugar);
+                    }
+                })
+            }
+
+            listaCadeirasEscolhidasID.forEach(lugar=>{
+                if(lugar!=cadeira.id){
+                    listaCadeirasEscolhidasID.push(lugar);
+                }
+            })
+            
+            setCadeirasEscolhidas(cadeirasAdicionadas);
+            setCadeirasEscolhidasID(cadeirasAdicionadasID);
+        }
+    }
+
+    function finalizarCadastro(obj){
+        obj.preventDefault();
+        const objetoTemporario = {
+            ids: cadeirasEscolhidas,
+            name: nome,
+            cpf: cpf
+        }
+        const urlMult = "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many";
+        const promise = axios.post(urlMult,objetoTemporario);
+        promise.then(resposta =>{
+
+            if(cadeirasEscolhidas.length > 0){
+                console.log(resposta.data);
+                navigate("/sucesso");
+            }else{
+                alert("Escolha uma cadeira");
+            }
+        });
+        promise.catch(erro => {
+            console.log(erro.response.data);
+        })
+    }
 
     return (
         <PageContainer>
             Selecione o(s) assento(s)
 
             <SeatsContainer>
-                <SeatItem>01</SeatItem>
-                <SeatItem>02</SeatItem>
-                <SeatItem>03</SeatItem>
-                <SeatItem>04</SeatItem>
-                <SeatItem>05</SeatItem>
+
+                {cadeiras.map((cadeira,contador)=>(
+
+                    <SeatItem data-test="seat" id = {cadeira.id} key = {cadeira.id} array = {cadeirasEscolhidas} isAvailable = {cadeira.isAvailable} onClick={()=>escolherCadeira(cadeira)}>
+                        (cadeira.name)
+                    </SeatItem>
+
+                )
+                )}
+                
             </SeatsContainer>
 
             <CaptionContainer>
@@ -29,23 +126,25 @@ export default function SeatsPage() {
                 </CaptionItem>
             </CaptionContainer>
 
+            <form onSubmit={finalizarCadastro}>
             <FormContainer>
                 Nome do Comprador:
-                <input placeholder="Digite seu nome..." />
+                <input data-test = "client-name" value = {nome} id = "nome" onChange={(obj)=>setNome(obj.target.value)} type = "text" placeholder="Digite seu nome..." />
 
                 CPF do Comprador:
-                <input placeholder="Digite seu CPF..." />
-
-                <button>Reservar Assento(s)</button>
+                <input data-test = "client-cpf" value = {cpf} id = "cpf" onChange={(obj)=>setCpf(obj.target.value)} type = "text" placeholder="Digite seu CPF..." />
+                <button data-test = "book-seat-btn" type = "submit" >Reservar Assento(s)</button>
             </FormContainer>
+        
+            </form>
 
-            <FooterContainer>
+            <FooterContainer data-test = "footer" >
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <img src={objetoFilme.poterURL} alt="poster" />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
-                    <p>Sexta - 14h00</p>
+                    <p>{objetoFilme.title}</p>
+                    <p>{objetoDia.weekday} - {objetoNome}</p>
                 </div>
             </FooterContainer>
 
