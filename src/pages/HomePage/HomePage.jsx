@@ -1,6 +1,28 @@
 import styled from "styled-components"
+import axios from "axios"
+import { useState } from "react"
+import { useEffect } from "react"
+import { Link } from "react-router-dom"
 
 export default function HomePage() {
+
+    const [movies,setMovies] = useState([]);
+
+    useEffect(() => {
+
+        const promise = axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies");
+        
+        promise.then((resposta) => {
+            setMovies(resposta.data);
+        })
+
+        promise.catch((err)=>{
+            console.log(err.response.data);
+        })
+
+
+
+    },[]);
     return (
         <PageContainer>
             Selecione o filme
