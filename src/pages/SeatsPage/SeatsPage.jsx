@@ -104,7 +104,7 @@ export default function SeatsPage(props) {
                 {cadeiras.map((cadeira,contador)=>(
 
                     <SeatItem data-test="seat" id = {cadeira.id} key = {cadeira.id} array = {cadeirasEscolhidas} isAvailable = {cadeira.isAvailable} onClick={()=>escolherCadeira(cadeira)}>
-                        (cadeira.name)
+                        {cadeira.name}
                     </SeatItem>
 
                 )
